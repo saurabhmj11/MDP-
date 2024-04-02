@@ -1,12 +1,28 @@
+import time
 import pickle
 import streamlit as st
-from streamlit_option_menu import option_menu
 
 # Change Name & Logo
-st.set_page_config(page_title="Diease Prediction", page_icon="⚕️")
+st.set_page_config(page_title="Disease Prediction", page_icon="⚕️")
 
-# hidding streamlit ad-ons
+fade_in_css = """
+    <style>
+        .fade-in {
+            animation: fadeIn ease 1s;
+            animation-delay: 1s; /* Adjust the delay as needed */
+            visibility: visible;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+"""
 
+# Applying fade-in animation CSS
+st.markdown(fade_in_css, unsafe_allow_html=True)
+
+# Hiding Streamlit ad-ons
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -16,43 +32,57 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# loading the saved models
-
+# Loading the saved models
 diabetes_model = pickle.load(open('Models/diabetes_model.sav', 'rb'))
-
 heart_disease_model = pickle.load(open('Models/heart_disease_model.sav', 'rb'))
-
 parkinsons_model = pickle.load(open('Models/parkinsons_model.sav', 'rb'))
-
 lungs_disease_model = pickle.load(open('Models/lungs_disease_model.sav', 'rb'))
-
 thyroid_model = pickle.load(open('Models/Thyroid_model.sav', 'rb'))
 
+# Custom CSS for menu styling and animation
+menu_css = """
+    <style>
+        .option-menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .option-menu li {
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option-menu li:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+"""
 
-# sidebar for navigation
+# Applying custom CSS
+st.markdown(menu_css, unsafe_allow_html=True)
+
+# Sidebar for navigation
 with st.sidebar:
+    selected = st.radio('Choose Disease Prediction', 
+                        ['💉 Diabetes Prediction', 
+                         '❤️ Heart Disease Prediction', 
+                         '🧠 Parkinsons Prediction', 
+                         '🫁 Lungs Cancer Prediction', 
+                         '🦋 Hypo-Thyroid Prediction'])
 
-    selected = option_menu('Multiple Disease Prediction System',
-
-                           ['Diabetes Prediction',
-                            'Heart Disease Prediction',
-                            'Parkinsons Prediction',
-                            'Lungs Cancer Prediction',
-                            'Hypo-Thyroid Prediction'],
-
-                           icons=['activity', 'heart', 'person',
-                                  'brightness-high', 'droplet-half'],
-
-                           default_index=0)
+# Render selected option
+st.write(f'You selected: {selected}')
 
 
 # Diabetes Prediction Page
-if (selected == 'Diabetes Prediction'):
+if selected == '💉 Diabetes Prediction':
 
-    # page title
+    # Page title
     st.title('Diabetes Prediction using ML')
 
-    # getting the input data from the user
+    # Getting the input data from the user
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -80,27 +110,29 @@ if (selected == 'Diabetes Prediction'):
     with col2:
         Age = st.text_input('Age of the Person')
 
-    # code for Prediction
+    # Code for Prediction
     diab_diagnosis = ''
 
-    # creating a button for Prediction
+    # Creating a button for Prediction
 
     if st.button('Diabetes Test Result'):
-        diab_prediction = diabetes_model.predict(
-            [[Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]])
+        result_placeholder = st.empty()
+        with st.spinner('Predicting...'):
+            time.sleep(2)  # Placeholder for actual prediction process
+            diab_prediction = diabetes_model.predict(
+                [[Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]])
 
-        if (diab_prediction[0] == 1):
-            diab_diagnosis = 'The person is diabetic'
-        else:
-            diab_diagnosis = 'The person is not diabetic'
-
-    st.success(diab_diagnosis)
+            if diab_prediction[0] == 1:
+                diab_diagnosis = 'The person is diabetic'
+            else:
+                diab_diagnosis = 'The person is not diabetic'
+        result_placeholder.success(diab_diagnosis)
 
 
 # Heart Disease Prediction Page
-if (selected == 'Heart Disease Prediction'):
+if selected == '❤️ Heart Disease Prediction':
 
-    # page title
+    # Page title
     st.title('Heart Disease Prediction using ML')
 
     col1, col2, col3 = st.columns(3)
@@ -145,27 +177,28 @@ if (selected == 'Heart Disease Prediction'):
         thal = st.text_input(
             'thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
 
-    # code for Prediction
+    # Code for Prediction
     heart_diagnosis = ''
 
-    # creating a button for Prediction
+    # Creating a button for Prediction
 
     if st.button('Heart Disease Test Result'):
-        heart_prediction = heart_disease_model.predict(
-            [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
+        result_placeholder = st.empty()
+        with st.spinner('Predicting...'):
+            time.sleep(2)  # Placeholder for actual prediction process
+            heart_prediction = heart_disease_model.predict(
+                [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
 
-        if (heart_prediction[0] == 1):
-            heart_diagnosis = 'The person is having heart disease'
-        else:
-            heart_diagnosis = 'The person does not have any heart disease'
-
-    st.success(heart_diagnosis)
-
+            if heart_prediction[0] == 1:
+                heart_diagnosis = 'The person is having heart disease'
+            else:
+                heart_diagnosis = 'The person does not have any heart disease'
+        result_placeholder.success(heart_diagnosis)
 
 # Parkinson's Prediction Page
-if (selected == "Parkinsons Prediction"):
+if selected == '🧠 Parkinsons Prediction':
 
-    # page title
+    # Page title
     st.title("Parkinson's Disease Prediction using ML")
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -236,25 +269,27 @@ if (selected == "Parkinsons Prediction"):
     with col2:
         PPE = st.text_input('PPE')
 
-    # code for Prediction
+    # Code for Prediction
     parkinsons_diagnosis = ''
 
-    # creating a button for Prediction
+    # Creating a button for Prediction
     if st.button("Parkinson's Test Result"):
-        parkinsons_prediction = parkinsons_model.predict(
-            [[fo, fhi, flo, Jitter_percent, Jitter_Abs, RAP, PPQ, DDP, Shimmer, Shimmer_dB, APQ3, APQ5, APQ, DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]])
+        result_placeholder = st.empty()
+        with st.spinner('Predicting...'):
+            time.sleep(2)  # Placeholder for actual prediction process
+            parkinsons_prediction = parkinsons_model.predict(
+                [[fo, fhi, flo, Jitter_percent, Jitter_Abs, RAP, PPQ, DDP, Shimmer, Shimmer_dB, APQ3, APQ5, APQ, DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]])
 
-        if (parkinsons_prediction[0] == 1):
-            parkinsons_diagnosis = "The person has Parkinson's disease"
-        else:
-            parkinsons_diagnosis = "The person does not have Parkinson's disease"
-
-    st.success(parkinsons_diagnosis)
+            if parkinsons_prediction[0] == 1:
+                parkinsons_diagnosis = "The person has Parkinson's disease"
+            else:
+                parkinsons_diagnosis = "The person does not have Parkinson's disease"
+        result_placeholder.success(parkinsons_diagnosis)
 
 # Lungs Cancer Prediction Page
-if (selected == "Lungs Cancer Prediction"):
+if selected == '🫁 Lungs Cancer Prediction':
 
-    # page title
+    # Page title
     st.title("Lungs Cancer Disease Prediction using ML")
 
     col1, col2, col3, col4 = st.columns(4)
@@ -304,25 +339,27 @@ if (selected == "Lungs Cancer Prediction"):
     with col3:
         CHEST_PAIN = st.text_input('Chest Pain')
 
-    # code for Prediction
+    # Code for Prediction
     lungs_diagnosis = ''
 
-    # creating a button for Prediction
+    # Creating a button for Prediction
     if st.button("Lung's Test Result"):
-        lungs_prediction = lungs_disease_model.predict([[GENDER, AGE, SMOKING, YELLOW_FINGERS, ANXIETY, PEER_PRESSURE, CHRONIC_DISEASE,
-                                                       FATIGUE, ALLERGY, WHEEZING, ALCOHOL_CONSUMING, COUGHING, SHORTNESS_OF_BREATH, SWALLOWING_DIFFICULTY, CHEST_PAIN]])
+        result_placeholder = st.empty()
+        with st.spinner('Predicting...'):
+            time.sleep(2)  # Placeholder for actual prediction process
+            lungs_prediction = lungs_disease_model.predict([[GENDER, AGE, SMOKING, YELLOW_FINGERS, ANXIETY, PEER_PRESSURE, CHRONIC_DISEASE,
+                                                             FATIGUE, ALLERGY, WHEEZING, ALCOHOL_CONSUMING, COUGHING, SHORTNESS_OF_BREATH, SWALLOWING_DIFFICULTY, CHEST_PAIN]])
 
-        if (lungs_prediction[0] == 1):
-            lungs_diagnosis = "The person has lungs cancer disease"
-        else:
-            lungs_diagnosis = "The person does not have lungs cancer disease"
-
-    st.success(lungs_diagnosis)
+            if lungs_prediction[0] == 1:
+                lungs_diagnosis = "The person has lungs cancer disease"
+            else:
+                lungs_diagnosis = "The person does not have lungs cancer disease"
+        result_placeholder.success(lungs_diagnosis)
 
 # Hypo-Thyroid Prediction Page
-if (selected == "Hypo-Thyroid Prediction"):
+if selected == '🦋 Hypo-Thyroid Prediction':
 
-    # page title
+    # Page title
     st.title("Hypo-Thyroid Prediction using ML")
 
     col1, col2, col3 = st.columns(3)
@@ -348,17 +385,43 @@ if (selected == "Hypo-Thyroid Prediction"):
     with col1:
         tt4 = st.text_input('TT4')
 
-    # code for Prediction
+    # Code for Prediction
     thyroid_diagnosis = ''
 
-    # creating a button for Prediction
+    # Creating a button for Prediction
     if st.button("Thyroid's Test Result"):
-        thyroid_prediction = thyroid_model.predict(
-            [[age, sex, on_thyroxine, tsh, t3_measured, t3, tt4]])
+        result_placeholder = st.empty()
+        with st.spinner('Predicting...'):
+            time.sleep(2)  # Placeholder for actual prediction process
+            thyroid_prediction = thyroid_model.predict(
+                [[age, sex, on_thyroxine, tsh, t3_measured, t3, tt4]])
 
-        if (thyroid_prediction[0] == 1):
-            thyroid_diagnosis = "The person has Hypo Thyroid disease"
-        else:
-            thyroid_diagnosis = "The person does not have Hypo Thyroid disease"
+            if thyroid_prediction[0] == 1:
+                thyroid_diagnosis = "The person has Hypo Thyroid disease"
+            else:
+                thyroid_diagnosis = "The person does not have Hypo Thyroid disease"
+        result_placeholder.success(thyroid_diagnosis)
 
-    st.success(thyroid_diagnosis)
+# Footer
+footer_html = """
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            z-index: 999;
+            opacity: 1;
+        }
+    </style>
+    <div class="footer">
+        Designed and Developed by Saurabh Lokhande
+    </div>
+"""
+
+st.markdown(footer_html, unsafe_allow_html=True)
